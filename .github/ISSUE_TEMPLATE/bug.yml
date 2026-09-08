@@ -1,0 +1,22 @@
+name: Bug report
+description: Report an AgentWarmup scheduling or installation problem.
+body:
+  - type: input
+    id: version
+    attributes:
+      label: AgentWarmup version and operating system
+      placeholder: Version, OS, and CPU architecture
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: What happened?
+      description: Include expected behavior, steps, and concise error/status text. Remove account identifiers, credentials, and provider transcripts.
+    validations:
+      required: true
+  - type: input
+    id: provider
+    attributes:
+      label: Provider CLI and version, if relevant
+      description: Do not attach authentication files or raw authentication status.

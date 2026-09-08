@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "repository": "OliverGrabner/agentwarmup",
+  "command": "agentwarmup",
+  "version": null,
+  "releaseReady": false,
+  "archivePattern": "agentwarmup_VERSION_OS_ARCH",
+  "checksumAsset": "checksums.txt",
+  "installers": ["install.sh", "install.ps1"],
+  "targets": [
+    {"os": "windows", "arch": "amd64", "extension": "zip", "lifecycleValidated": false},
+    {"os": "windows", "arch": "arm64", "extension": "zip", "lifecycleValidated": false},
+    {"os": "darwin", "arch": "amd64", "extension": "tar.gz", "lifecycleValidated": false},
+    {"os": "darwin", "arch": "arm64", "extension": "tar.gz", "lifecycleValidated": false},
+    {"os": "linux", "arch": "amd64", "extension": "tar.gz", "lifecycleValidated": false},
+    {"os": "linux", "arch": "arm64", "extension": "tar.gz", "lifecycleValidated": false}
+  ],
+  "providers": {
+    "codex": {"validation": "pending", "minimumCLIVersion": "0.153.0", "candidateModel": "gpt-6-astra", "validatedModel": null},
+    "claude": {"validation": "pending", "minimumCLIVersion": "2.1.169", "candidateModel": "claude-sonnet-4-6", "validatedModel": null}
+  }
+}

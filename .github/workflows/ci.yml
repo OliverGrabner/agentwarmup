@@ -1,0 +1,70 @@
+name: CI
+on:
+  push:
+  pull_request:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5
+        with:
+          go-version-file: go.mod
+          cache: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - name: npm launcher and package tests
+        shell: pwsh
+        run: |
+          npm --prefix npm test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --test .github/scripts/package-npm.test.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Formatting, vet, and fake-provider tests
+        shell: pwsh
+        run: |
+          $files = @(git ls-files '*.go') + @(git ls-files --others --exclude-standard '*.go')
+          $unformatted = @(& gofmt -l $files)
+          if ($LASTEXITCODE -ne 0 -or $unformatted.Count -gt 0) { throw "Run gofmt: $unformatted" }
+          go vet ./...
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          go test ./...
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Race detector
+        if: runner.os != 'Windows'
+        run: go test -race ./...
+      - name: Installer syntax and release gate
+        shell: pwsh
+        run: |
+          $parseErrors = $null
+          $null = [Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD 'install.ps1'), [ref]$null, [ref]$parseErrors)
+          if ($parseErrors.Count) { throw ($parseErrors | Out-String) }
+          & ./.github/scripts/release.ps1 -Tag v0.1.0-rc.1 -CheckOnly
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $metadata = Get-Content .github/release.json -Raw | ConvertFrom-Json
+          if (-not $metadata.releaseReady) {
+            try { & ./.github/scripts/release.ps1 -Tag v0.1.0 -CheckOnly; throw 'Gate unexpectedly accepted stable release.' }
+            catch { if ($_.Exception.Message -notlike 'Stable release blocked:*') { throw } }
+          }
+      - name: POSIX installer syntax
+        if: runner.os != 'Windows'
+        run: sh -n install.sh
+  node-current-lts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+      - name: npm launcher and package tests
+        run: |
+          npm --prefix npm test
+          node --test .github/scripts/package-npm.test.mjs

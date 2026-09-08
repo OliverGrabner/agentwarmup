@@ -1,0 +1,13 @@
+{
+  "name": "agentwarmup",
+  "version": "0.0.0-development",
+  "private": true,
+  "description": "Launch the version-pinned AgentWarmup executable",
+  "license": "MIT",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "bin": { "agentwarmup": "bin/agentwarmup.js" },
+  "files": ["bin/", "lib/", "manifest.json", "LICENSE"],
+  "scripts": { "test": "node --test" },
+  "repository": { "type": "git", "url": "https://github.com/OliverGrabner/agentwarmup.git" }
+}

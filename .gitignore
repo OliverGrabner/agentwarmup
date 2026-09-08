@@ -1,0 +1,11 @@
+/agentwarmup
+/agentwarmup.exe
+/dist/
+/build/
+/coverage.out
+node_modules/
+npm/*.tgz
+*.test
+*.test.exe
+.DS_Store
+Thumbs.db
