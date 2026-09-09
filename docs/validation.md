@@ -1,6 +1,6 @@
 # Provider validation
 
-Status: no live reset experiments recorded. The implementation and fake-process checks do not establish the product promise.
+Status: two deliberate Codex invocations recorded; neither provider has passed validation. Codex returned startup warnings that still need investigation. Fake-process checks do not establish the reset promise.
 
 Complete this record before advertising a provider or publishing a stable release. Implementation and fake-provider testing may proceed while these experiments are pending, as approved by the project owner on 2026-09-08. See [implementation.md](implementation.md) for the execution contract.
 
@@ -8,10 +8,29 @@ Complete this record before advertising a provider or publishing a stable releas
 
 | Provider | CLI version | OS | Plan | Exact model | Relevant allowance | Result |
 | --- | --- | --- | --- | --- | --- | --- |
-| Codex | 0.153.0 minimum candidate | Windows help inspected | Subscription status confirmed locally | gpt-6-astra candidate | Not verified | No model request |
-| Claude | 2.1.169 minimum candidate; local 2.1.92 rejected | Windows help inspected | Pro status confirmed locally | claude-sonnet-4-6 candidate | Not verified | No model request |
+| Codex | 0.153.0 candidate | Windows amd64 | ChatGPT Plus | gpt-6-astra candidate | Active 300-minute window observed | Warning events; request and reset unverified |
+| Claude | Isolated 2.1.169 candidate; installed 2.1.92 rejected | Windows amd64 | Pro subscription auth confirmed with isolated arguments | claude-sonnet-4-6 candidate | Not verified | No model request |
 
 These are compatibility candidates, not passing combinations. Local authentication probes returned only non-secret status fields; they do not establish isolated request access. Record exact OS/CLI/plan/model combinations when experiments run. A build artifact does not establish compatibility.
+
+## Observations on 2026-09-09
+
+Both Codex invocations used the [candidate arguments](provider-notes.md) from `provider.Request`, an empty owned working directory, closed stdin, the existing file-based subscription login, and a 120-second process timeout. Each deliberate attempt was recorded before launch; neither was retried automatically.
+
+| Invocation | Start UTC | End UTC | Observation |
+| --- | --- | --- | --- |
+| Production runner | 16:56:49.561 | 16:56:53.769 | Reported an isolation failure; raw output was discarded |
+| Separate diagnostic | 17:00:20.609 | 17:00:30.390 | Exit 0, final text `OK`, two startup error items, no tool item types |
+
+The diagnostic exposed a classification bug: Codex uses `item.type=error` for nonfatal warnings as well as model rerouting. These now produce a fixed warning/error failure instead of an invented tool-call failure. Unknown events still fail, and explicit tool activity remains rejected. The two warning messages were not retained, so they are not assumed harmless. The invocation remains unvalidated. [Codex 0.153.0 event handling](https://github.com/openai/codex/blob/rust-v0.153.0/codex-rs/exec/src/event_processor_with_jsonl_output.rs#L401-L498).
+
+Non-generative quota reads immediately before and after both invocations reported the same active 300-minute reset: **2026-09-09 21:56:25 UTC**, a difference of zero seconds. An earlier read at 16:54:15 UTC reported 21:53:09 UTC. Other account activity was ongoing, so that earlier change cannot be attributed to these experiments. **Active has not passed**; Idle A, Idle B, and Scheduled remain pending.
+
+The quota helper verified effective integration restrictions and subscription status before reading usage data. This verifies status access, not model-request isolation.
+
+For Claude, an isolated 2.1.169 binary passed signed-manifest, SHA-256, and Authenticode verification. Its frozen safe-mode arguments with `auth status --json` confirmed `claude.ai`, `firstParty`, and `pro`. Updates were disabled; the existing installations were not changed. No Claude model request was sent.
+
+Sanitized local evidence is under `build/validation/` and is ignored by Git. It contains invocation metadata, timestamps, numeric quota observations, and diagnostic event types, without credentials, account identities, or conversation output.
 
 ## Experiment per provider
 
