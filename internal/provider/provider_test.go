@@ -316,6 +316,33 @@ func TestResultClassification(t *testing.T) {
 		})
 	}
 }
+func TestCodexItemDiagnosticsDoNotInventToolCalls(t *testing.T) {
+	ok := `{"type":"item.completed","item":{"type":"agent_message","text":"OK"}}` + "\n" + `{"type":"turn.completed"}`
+	for _, tc := range []struct {
+		name, item, wantDetail string
+	}{
+		{"warning", `{"type":"error","message":"Configuration warning with person@example.invalid"}`, "Provider reported a warning or error; request success is unverified"},
+		{"model rerouting", `{"type":"error","message":"model rerouted: requested -> fallback"}`, "Provider reported a warning or error; request success is unverified"},
+		{"unknown item", `{"type":"future_item","text":"OK"}`, "Provider request did not return a recognized successful result"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got := Classify(0, `{"type":"item.completed","item":`+tc.item+"}\n"+ok, "")
+			if got.Outcome != "failed" || got.Detail != tc.wantDetail {
+				t.Fatalf("%+v, want failed with %q", got, tc.wantDetail)
+			}
+		})
+	}
+	for _, kind := range []string{"command_execution", "file_change", "mcp_tool_call", "collab_tool_call", "web_search", "todo_list"} {
+		t.Run(kind, func(t *testing.T) {
+			out := `{"type":"item.completed","item":{"type":"error","message":"Warning"}}` + "\n" + `{"type":"item.started","item":{"type":"` + kind + `"}}` + "\n" + ok
+			got := Classify(0, out, "")
+			if got.Outcome != "failed" || got.Detail != "Provider attempted a tool call; request isolation failed" {
+				t.Fatalf("explicit tool activity was not rejected: %+v", got)
+			}
+		})
+	}
+}
+
 func TestScrub(t *testing.T) {
 	for _, secret := range []string{"sk-abcdefgh123456", "Bearer secret-value", "eyJabcdef.eyJdefgh.signature", "person@example.invalid", `access_token="opaque-secret"`, `account_id: account-secret`} {
 		got := Scrub("Error " + secret + "\n done")

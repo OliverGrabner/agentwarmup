@@ -15,7 +15,7 @@ func Classify(exitCode int, stdout, stderr string) Result {
 	if len(stdout) > 2*1024*1024 || len(stderr) > 2*1024*1024 {
 		return Result{"failed", "Provider output exceeded the safe limit"}
 	}
-	var finalOK, completed, toolUsed, invalid, structuredError bool
+	var finalOK, completed, toolUsed, invalid, structuredError, itemWarning bool
 	var observedError Result
 	scan := bufio.NewScanner(strings.NewReader(stdout))
 	scan.Buffer(make([]byte, 4096), 2*1024*1024)
@@ -59,8 +59,15 @@ func Classify(exitCode int, stdout, stderr string) Result {
 					finalOK = strings.TrimSpace(event.Item.Text) == "OK"
 				}
 			case "reasoning":
-			default:
+			case "error":
+				// Codex also uses error items for configuration warnings,
+				// deprecation notices, and model rerouting. They are not tool
+				// calls, but cannot establish the frozen invocation succeeded.
+				itemWarning = true
+			case "command_execution", "file_change", "mcp_tool_call", "collab_tool_call", "web_search", "todo_list":
 				toolUsed = true
+			default:
+				invalid = true
 			}
 		case "turn.completed":
 			completed = true
@@ -111,6 +118,9 @@ func Classify(exitCode int, stdout, stderr string) Result {
 	}
 	if structuredError || invalid {
 		return failed
+	}
+	if itemWarning {
+		return Result{"failed", "Provider reported a warning or error; request success is unverified"}
 	}
 	if completed && finalOK {
 		return Result{"succeeded", "Request succeeded; reset unverified"}
