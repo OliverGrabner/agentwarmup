@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -111,6 +111,19 @@ test('asset verification rejects corrupted compressed bytes, raw hash mismatches
   await assert.rejects(verifyBinaryAssets(f.output, manifest), /Binary checksum mismatch/);
   target.asset = '../outside.gz';
   await assert.rejects(verifyBinaryAssets(f.output, manifest), /Invalid binary asset path/);
+});
+
+test('asset verification accepts an output directory reached through an alias', async (t) => {
+  const f = await fixture(t);
+  const bytes = gzipSync(Buffer.from('expected executable'));
+  const target = { asset: 'binary.gz', sha256: hash(bytes), binarySha256: hash(Buffer.from('expected executable')) };
+  await writeFile(path.join(f.output, target.asset), bytes);
+  const alias = path.join(path.dirname(f.output), 'release-alias');
+  // macOS temporary paths and Windows runner paths can differ from their real paths.
+  await symlink(f.output, alias, process.platform === 'win32' ? 'junction' : 'dir');
+  await verifyBinaryAssets(alias, { targets: { 'linux-x64': target } });
+  await writeFile(path.join(f.output, target.asset), Buffer.from('corrupt'));
+  await assert.rejects(verifyBinaryAssets(alias, { targets: { 'linux-x64': target } }), /Compressed checksum mismatch/);
 });
 
 test('release versions, targets, and source package are validated before writing assets', async (t) => {

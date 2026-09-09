@@ -27,6 +27,7 @@ async function ownedFile(root, relative) {
 
 // Re-read every asset before packing so the embedded hashes describe verified bytes on disk.
 export async function verifyBinaryAssets(output, manifest) {
+  output = await realpath(output);
   for (const target of Object.values(manifest.targets)) {
     if (path.basename(target.asset) !== target.asset || /[\\/]/.test(target.asset)) {
       throw new Error('Invalid binary asset path.');
