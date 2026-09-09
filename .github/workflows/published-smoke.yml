@@ -1,0 +1,36 @@
+name: Published preview smoke
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Exact published prerelease tag, such as v0.1.0-rc.1
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  smoke:
+    if: github.repository == 'OliverGrabner/agentwarmup'
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            node: '22'
+          - os: macos-latest
+            node: '22'
+          - os: ubuntu-latest
+            node: '22'
+          - os: ubuntu-latest
+            node: '24'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Verify published tarball and run native status through npm
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: node .github/scripts/smoke-published-npm.mjs

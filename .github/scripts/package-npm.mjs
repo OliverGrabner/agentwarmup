@@ -8,7 +8,7 @@ import { gzipSync, gunzipSync } from 'node:zlib';
 
 const repository = 'OliverGrabner/agentwarmup';
 const sourceVersion = '0.0.0-development';
-const versionPattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*)?$/;
+export const versionPattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9]\d*|\d*[A-Za-z-][0-9A-Za-z-]*))*)?$/;
 const platforms = { windows: 'win32', darwin: 'darwin', linux: 'linux' };
 const architectures = { amd64: 'x64', arm64: 'arm64' };
 const runtimeFiles = ['bin/agentwarmup.js', 'lib/launcher.js', 'README.md'];
@@ -39,7 +39,7 @@ export async function verifyBinaryAssets(output, manifest) {
   }
 }
 
-async function npmCLI() {
+export async function npmCLI() {
   // Launch npm's JavaScript entry point directly; .cmd files require unsafe shell invocation.
   const roots = [path.dirname(process.execPath), ...(process.env.PATH ?? '').split(path.delimiter)];
   const candidates = process.env.npm_execpath ? [process.env.npm_execpath] : [];
