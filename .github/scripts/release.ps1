@@ -60,7 +60,7 @@ try {
             # Remove only staging trees created by this invocation, within its fresh output.
             $resolved=(Resolve-Path -LiteralPath $work).ProviderPath
             $resolvedDestination=(Resolve-Path -LiteralPath $destination).ProviderPath.TrimEnd([IO.Path]::DirectorySeparatorChar)
-            if (-not $resolved.StartsWith($resolvedDestination + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase) -or (Get-Item -LiteralPath $work).Attributes.HasFlag([IO.FileAttributes]::ReparsePoint)) { throw 'Staging directory escaped release output.' }
+            if (-not $resolved.StartsWith($resolvedDestination + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase) -or (Get-Item -LiteralPath $work -Force).Attributes.HasFlag([IO.FileAttributes]::ReparsePoint)) { throw 'Staging directory escaped release output.' }
             Remove-Item -LiteralPath $resolved -Recurse -Force
         }
     }
