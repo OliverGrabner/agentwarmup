@@ -19,7 +19,7 @@ Record results for every published OS/architecture/provider combination. Do not 
 
 | Platform | Install | Terminal closed | Edit | Pause/resume | Update | Uninstall | Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Windows amd64 | Pending | Fake scheduled runner passed | Unit tests | Native fake passed | Unit tests | Job removal and isolated self-removal passed | [Offline evidence](testing.md) |
+| Windows amd64 | Published launcher with fake passed | Fake scheduled runner passed | Published fake passed | Published fake passed | Same-version published fake passed | Owned files, job, and PATH removal passed | [Published checks](testing.md#published-preview-checks) |
 | Windows arm64 | Pending | Pending | Pending | Pending | Pending | Pending | |
 | macOS arm64 | Pending | Pending | Pending | Pending | Pending | Pending | |
 | macOS amd64 | Pending | Pending | Pending | Pending | Pending | Pending | |
@@ -48,13 +48,13 @@ Record results for every published OS/architecture/provider combination. Do not 
 - [ ] The current development notice is replaced only when the release behavior is real.
 - [x] gofmt, go vet, unit/process tests, and Windows race checks pass locally.
 - [x] CI runs on Windows, macOS, and Linux without provider credentials or live requests. [Passing run](https://github.com/OliverGrabner/agentwarmup/actions/runs/34379607953).
-- [x] Local candidate packaging includes version information, archives, LICENSE, and one SHA-256 manifest. GitHub workflow execution remains pending.
-- [ ] Installer and artifacts refer to the same release tag; avoid independently resolving latest twice.
+- [x] Candidate packaging includes version information, archives, LICENSE, and one SHA-256 manifest. [GitHub release build passed](https://github.com/OliverGrabner/agentwarmup/actions/runs/34380977113).
+- [x] Installer and artifacts refer to the same release tag; avoid independently resolving latest twice. Verified for v0.1.0-rc.2.
 - [x] The local npm tarball embeds the matching executable hashes and version, includes LICENSE, and excludes tests, credentials, and install hooks.
-- [ ] Publish candidate assets before testing the matching npm package under an explicit preview tag. Verify package ownership and the intended npm tag; never let a candidate become latest.
-- [ ] The exact released npm command is tested from a clean cache before adding it to the README. Keep the native installation route nearby.
+- [ ] Publish candidate assets before testing the matching npm package under an explicit preview tag. GitHub assets are published; registry publication is blocked by npm authentication/permissions. Never let a candidate become latest.
+- [x] The exact GitHub-package npm command is tested from a clean cache before adding it to the README, with the native route nearby. Registry installation remains pending.
 - [ ] Minimum CLI versions and validated models are recorded.
-- [ ] Release notes describe behavior, supported platforms, important limits, and update/removal instructions.
+- [x] Preview release notes describe behavior, build targets, validation limits, and update/removal instructions.
 - [ ] MIT attribution remains intact. Downloaded binaries stay out of source control.
 
 Release workflow: run CI, build artifacts, generate checksums, and prepare a draft release. Publish it as a prerelease candidate so clean-machine testers can use unauthenticated, release-specific download URLs. Verify installation, then promote those same verified assets to the stable release and check the final README commands. Give workflow tokens only the permissions each job needs. Use pinned action revisions and keep release credentials out of ordinary test jobs.

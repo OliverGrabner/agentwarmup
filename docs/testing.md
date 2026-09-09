@@ -74,4 +74,17 @@ These local results do not include a published npm download/install, clean-machi
 
 On 2026-09-09, [GitHub CI passed](https://github.com/OliverGrabner/agentwarmup/actions/runs/34379607953) on Windows, macOS, and Linux with Node 22, plus launcher/package checks on Linux with Node 24. The fixes account for temporary-directory aliases in package verification and test fixtures; installer symlink checks remain enforced.
 
+## Published preview checks
+
+Checked [v0.1.0-rc.2](https://github.com/OliverGrabner/agentwarmup/releases/tag/v0.1.0-rc.2) on 2026-09-09:
+
+- The [release workflow](https://github.com/OliverGrabner/agentwarmup/actions/runs/34380977113) passed. All 16 downloaded assets matched `checksums.txt`; the package contains six files and no dependencies or installation hooks.
+- [Published-package checks](https://github.com/OliverGrabner/agentwarmup/actions/runs/34381525596) passed on Windows x64 and macOS ARM64 with Node 22.23.2, and Linux x64 with Node 22.23.2 and 24.20.0. Each used a fresh npm cache, verified the release tarball, and ran native status through the launcher. No application or scheduler job was created; the temporary executable was removed.
+- The exact GitHub-package URL in the README also downloaded and ran native status locally through `npx`, using a fresh cache.
+- Windows x64 installation through the published launcher passed with an isolated fake Codex. Installed setup/edit, status, pause/resume, same-version update, and uninstall passed. Update preserved settings and activation time. Uninstall removed the owned files, job, and PATH entry; existing jobs and user PATH were unchanged afterward. No request occurred during these lifecycle commands.
+- Windows Task Scheduler separately ran the published executable with the offline fixture at **17:12:00 UTC**. Exactly one request was recorded; duplicate checks and pause/resume sent no extra request. Its isolated job was removed.
+- npm's publication dry run passed with the explicit `preview` tag. Actual registry publication was rejected; npm account authentication/permissions remain unresolved. The public GitHub tarball works independently of registry publication.
+
+Local sanitized reports are under `build/installer-acceptance/` and downloads under `build/published-rc2/`, both ignored by Git. These checks do not establish clean-machine OS trust behavior, full native lifecycle on macOS/Linux, other architectures, or provider reset timing.
+
 Live validation is tracked separately in [validation.md](validation.md). Native platform acceptance and clean-machine installation are tracked in [pre-publish.md](pre-publish.md). Cross-compilation does not establish native compatibility, and neither a successful request nor a passing fake establishes the reset promise.

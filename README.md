@@ -21,15 +21,21 @@ Choose a target reset time. AgentWarmup schedules a minimal request five hours e
 
 ## Setup
 
-**Development preview:** [reset timing is unverified](docs/validation.md). The npm package and release downloads are not published yet. To try the local source, follow the [build and setup instructions](docs/development.md#local-setup).
+**Preview:** available for testing installation and scheduling. [Provider reset checks are unfinished](docs/validation.md).
 
 You need a subscription login in **Codex CLI 0.153.0+** or **Claude Code 2.1.169+**.
 
-The release will offer an npm launcher for **Node 22+** users and native installers for everyone else. Both install the same executable, with no Go or clone needed.
+With **Node 22+**, run this in your terminal:
+
+```sh
+npx --yes --package=https://github.com/OliverGrabner/agentwarmup/releases/download/v0.1.0-rc.2/agentwarmup-0.1.0-rc.2.tgz agentwarmup
+```
+
+This downloads the app and opens setup. No clone or Go installation is needed. The command uses the published GitHub package; npm registry publication is pending. Without Node, use the [native downloads](docs/install.md).
 
 Setup detects your installed agents and timezone. Use **arrow keys and Enter** to choose agents, a target reset time, and days; the defaults are **10 AM, weekdays**. Review the warmup time and confirm. Custom times and days are available.
 
-Setup sends **no test request**. After saving, open a new terminal to use `agentwarmup` from any folder. The schedule runs locally after the terminal closes.
+Setup sends **no test request**. After saving, open a new terminal to use `agentwarmup` from any folder. Rerun the install command to update while keeping your settings.
 
 ## Everyday use
 
