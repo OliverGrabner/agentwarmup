@@ -65,7 +65,9 @@ try {
   assert.ok(output.includes(`Preparing AgentWarmup ${version}...`), 'Published launcher did not prepare the native executable.');
   assert.match(output, /not set up yet; run agentwarmup setup/, 'Published native executable did not report fresh-home status.');
   for (const file of [appRoot, ...definitions]) await absent(file);
-  assert.deepEqual(await readdir(downloads), [], 'Temporary native executable was not cleaned up.');
+  // npm may leave its own Node compile cache in the shared temporary directory.
+  const nativeDirectories = (await readdir(downloads)).filter(name => name.startsWith('agentwarmup-'));
+  assert.deepEqual(nativeDirectories, [], 'Temporary native executable was not cleaned up.');
   console.log(`Passed published npm/native smoke: ${tag}, ${process.platform}-${process.arch}, Node ${process.versions.node}; no application or job created.`);
 } finally {
   const resolved = await realpath(root);
