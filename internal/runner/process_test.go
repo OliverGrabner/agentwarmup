@@ -92,11 +92,15 @@ func TestExecuteClosedInputAndLiteralArguments(t *testing.T) {
 	if err := json.Unmarshal(data, &got); err != nil {
 		t.Fatal(err)
 	}
-	wantDir, err := filepath.EvalSymlinks(inv.Dir)
+	wantDir, err := os.Stat(inv.Dir)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got.StdinBytes != 0 || got.Dir != wantDir || got.Args[len(got.Args)-1] != "spaces & % Unicode café" {
+	gotDir, err := os.Stat(got.Dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got.StdinBytes != 0 || !os.SameFile(gotDir, wantDir) || got.Args[len(got.Args)-1] != "spaces & % Unicode café" {
 		t.Fatalf("unexpected invocation: %+v", got)
 	}
 }
