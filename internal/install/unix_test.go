@@ -9,6 +9,24 @@ import (
 	"testing"
 )
 
+func TestInstallationRootRejectsSymbolicLinkParent(t *testing.T) {
+	parent := filepath.Dir(testPaths(t).Root)
+	target := filepath.Join(parent, "actual")
+	if err := os.Mkdir(target, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateRoot(filepath.Join(target, "app")); err != nil {
+		t.Fatal(err)
+	}
+	alias := filepath.Join(parent, "alias")
+	if err := os.Symlink(target, alias); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateRoot(filepath.Join(alias, "app")); err == nil || !strings.Contains(err.Error(), "symbolic link") {
+		t.Fatalf("accepted symbolic link parent: %v", err)
+	}
+}
+
 func TestOwnedShellProfileAndRemoval(t *testing.T) {
 	for _, shell := range []string{"bash", "zsh", "fish"} {
 		t.Run(shell, func(t *testing.T) {

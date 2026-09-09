@@ -27,7 +27,13 @@ func TestMain(m *testing.M) {
 }
 func testPaths(t *testing.T) config.Paths {
 	t.Helper()
-	return config.Paths{Root: filepath.Join(t.TempDir(), "owned app 雪 & 50%")}
+	// macOS exposes its temporary directory through /var -> /private/var.
+	// Ordinary install fixtures must satisfy the production no-symlink guard.
+	parent, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	return config.Paths{Root: filepath.Join(parent, "owned app 雪 & 50%")}
 }
 func TestOwnedRootSafety(t *testing.T) {
 	p := testPaths(t)
