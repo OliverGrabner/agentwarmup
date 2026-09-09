@@ -70,6 +70,8 @@ Checked on Windows amd64, 2026-09-08:
 - Real Windows terminal checks with fakes passed for defaults, custom time/day selection, Escape, and Ctrl-C, including restoration of input/output console modes. A fake setup launched through the npm wrapper also passed defaults and Ctrl-C, and its temporary executable was removed.
 - The setup regression checks that job registration receives the permanent installed executable path. Live cache-removal/scheduled-execution acceptance remains pending.
 
-These results do not include a published npm download/install, clean-machine setup, macOS/Linux native execution, or a real subscription request. CI is configured for Node 22 on all three OSes and Node 24 on Linux, but has not been run on GitHub. Local preview artifacts are under `build/release-preview/` and are excluded from source control.
+These local results do not include a published npm download/install, clean-machine setup, macOS/Linux native execution, or a real subscription request. Local preview artifacts are under `build/release-preview/` and are excluded from source control.
+
+On 2026-09-09, [GitHub CI passed](https://github.com/OliverGrabner/agentwarmup/actions/runs/34379607953) on Windows, macOS, and Linux with Node 22, plus launcher/package checks on Linux with Node 24. The fixes account for temporary-directory aliases in package verification and test fixtures; installer symlink checks remain enforced.
 
 Live validation is tracked separately in [validation.md](validation.md). Native platform acceptance and clean-machine installation are tracked in [pre-publish.md](pre-publish.md). Cross-compilation does not establish native compatibility, and neither a successful request nor a passing fake establishes the reset promise.

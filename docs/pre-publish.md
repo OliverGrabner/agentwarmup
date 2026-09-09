@@ -47,7 +47,7 @@ Record results for every published OS/architecture/provider combination. Do not 
 - [ ] README contains only benefit/example, real installation, normal use, essential limits, and useful links.
 - [ ] The current development notice is replaced only when the release behavior is real.
 - [x] gofmt, go vet, unit/process tests, and Windows race checks pass locally.
-- [ ] CI runs on Windows, macOS, and Linux without provider credentials or live requests.
+- [x] CI runs on Windows, macOS, and Linux without provider credentials or live requests. [Passing run](https://github.com/OliverGrabner/agentwarmup/actions/runs/34379607953).
 - [x] Local candidate packaging includes version information, archives, LICENSE, and one SHA-256 manifest. GitHub workflow execution remains pending.
 - [ ] Installer and artifacts refer to the same release tag; avoid independently resolving latest twice.
 - [x] The local npm tarball embeds the matching executable hashes and version, includes LICENSE, and excludes tests, credentials, and install hooks.

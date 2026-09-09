@@ -4,8 +4,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-39785A?style=flat-square" alt="MIT license"></a>
-  <a href="go.mod"><img src="https://img.shields.io/badge/Go-1.25%2B-007D9C?style=flat-square&amp;logo=go&amp;logoColor=white" alt="Go 1.25 or later"></a>
-  <a href="docs/testing.md#release-evidence"><img src="https://img.shields.io/badge/checks-Windows%20%28local%29-39785A?style=flat-square" alt="Windows checks passed locally; see dated evidence"></a>
+  <a href="https://github.com/OliverGrabner/agentwarmup/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/OliverGrabner/agentwarmup/ci.yml?branch=main&amp;style=flat-square&amp;label=CI" alt="CI status"></a>
   <a href="docs/product.md"><img src="https://img.shields.io/badge/telemetry-none-526475?style=flat-square" alt="No telemetry"></a>
   <a href="docs/validation.md"><img src="https://img.shields.io/badge/status-preview-B47A27?style=flat-square" alt="Development preview"></a>
 </p>

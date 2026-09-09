@@ -1,10 +1,15 @@
 # Development
 
-The public repository is [OliverGrabner/agentwarmup](https://github.com/OliverGrabner/agentwarmup). Source publication and release downloads are pending. These instructions assume you already have the local source folder.
+These instructions are for working on the source. See the [README](../README.md#setup) to install AgentWarmup.
 
 ## Local setup
 
-Install [Go 1.25 or later](https://go.dev/dl/). Open a terminal in the AgentWarmup folder containing `go.mod` and `README.md`.
+Install [Go 1.25 or later](https://go.dev/dl/), then get the source:
+
+```sh
+git clone https://github.com/OliverGrabner/agentwarmup.git
+cd agentwarmup
+```
 
 Windows, in PowerShell:
 
